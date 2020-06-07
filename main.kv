@@ -1,0 +1,249 @@
+
+NavigationLayout:
+    id: nav_layout
+
+    ScreenManager:
+        id: root_screen_manager
+
+        Screen:
+            id: root_screen
+
+            BoxLayout:
+                id: box_layout
+                orientation: 'vertical'
+
+                MDToolbar:
+                    title: app.title
+                    elevation: 10
+                    left_action_items: [["menu", lambda x: nav_drawer.set_state()]]
+
+                ScreenManager:
+                    id: screen_manager
+                    Main_Page:
+                        id: main_page
+                        name: "main_page"
+                    About_Page:
+                        id: about_page
+                        name: "about_page"
+                    Settings_Page:
+                        id: settings_page
+                        name: "settings_page"
+                    Progress_Page:
+                        id: progress_page
+                        name: "progress_page"
+                    Video_Page:
+                        id: video_page
+                        name: "video_page"
+                    Audio_Page:
+                        id: audio_page
+                        name: "audio_page"
+
+
+    MDNavigationDrawer:
+        id: nav_drawer
+
+        AnchorLayout:
+            orientation: "vertical"
+            height: self.height
+            anchor_y: "bottom"
+            padding: "8dp"
+            spacing: "8dp"
+
+
+            Image:
+                id: avatar
+                size_hint: None, None
+                size: "240dp", "240dp"
+                source: "Image_Data/youtube-logo-hd.png"
+
+            ScrollView:
+                MDList:
+                    OneLineIconListItem:
+                        text: "Main Page"
+                        on_release:
+                            screen_manager.current = "main_page"
+                            nav_drawer.set_state()
+                        IconLeftWidget:
+                            icon: "home"
+                    OneLineIconListItem:
+                        text: "About"
+                        on_release:
+                            screen_manager.current = "about_page"
+                            nav_drawer.set_state()
+                        IconLeftWidget:
+                            icon: "information-outline"
+                    OneLineIconListItem:
+                        text: "Settings"
+                        on_release:
+                            screen_manager.current = "settings_page"
+                            nav_drawer.set_state()
+                        IconLeftWidget:
+                            icon: "settings-outline"
+
+
+<Settings_Page>:
+
+    FloatLayout:
+
+        MDLabel:
+            pos_hint: {"x": .2, "top": .9}
+            size_hint: (.35, .1)
+            text: "Dark Mode: "
+            halign: "center"
+            theme_text_color: "Primary"
+
+        MDSwitch:
+            id: mode
+            pos_hint: {"x": .6, "top": .9}
+            size_hint: None,None
+            size: dp(48), dp(48)
+            on_active: root.change_mode(*args)
+<Main_Page>:
+
+    FloatLayout:
+
+        MDTextField:
+            pos_hint: {"x": .15, "y": .6}
+            id: link_container
+            name: "link_container"
+            size_hint: .7,None
+            size: dp(48),dp(48)
+            hint_text: "Enter Youtube Video Link"
+            helper_text: "Enter Youtube Video Link"
+        MDFillRoundFlatIconButton:
+            pos_hint: {"x": .32, "y": .25}
+            size_hint: (.3, .08)
+            icon: "arrow-collapse-down"
+            text: "Convert"
+            on_press: root.wait()
+            on_release: app.get_video()
+        MDLabel:
+            id: mp3
+            pos_hint: {"x": .22, "y": .5}
+            size_hint: (.3, .08)
+            text: "MP3:"
+            theme_text_color: "Primary"
+        MDLabel:
+            id: mp4
+            pos_hint: {"x": .57, "y": .5}
+            size_hint: (.3, .08)
+            text: "MP4:"
+            theme_text_color: "Primary"
+        MDLabel:
+            id: 480p
+            pos_hint: {"x": .2, "y": .38}
+            size_hint: (.3, .08)
+            text: "480p:"
+            theme_text_color: "Primary"
+        MDLabel:
+            id: 720p
+            pos_hint: {"x": .4, "y": .38}
+            size_hint: (.3, .08)
+            text: "720p:"
+            theme_text_color: "Primary"
+        MDLabel:
+            id: 1080p
+            pos_hint: {"x": .6, "y": .38}
+            size_hint: (.3, .08)
+            text: "1080p:"
+            theme_text_color: "Primary"
+        Check:
+            id: is_mp3
+            name: "is_mp3"
+            pos_hint: {"x": .3, "y": .5}
+            on_active: app.is_mp3(*args)
+        Check:
+            id: is_mp4
+            name: "is_mp4"
+            pos_hint: {"x": .65, "y": .5}
+            on_active: app.is_mp4(*args)
+        Check2:
+            id: sd_check
+            name: "480p"
+            pos_hint: {"x": .3, "y": .38}
+            on_active: app.is_480p(*args)
+        Check2:
+            id: hd_check
+            name: "720p"
+            pos_hint: {"x": .5, "y": .38}
+            on_active: app.is_720p(*args)
+        Check2:
+            active: True
+            id: fullhd_check
+            name: "1080p"
+            pos_hint: {"x": .7, "y": .38}
+            on_active: app.is_1080p(*args)
+        MDLabel:
+            id: wait
+            pos_hint: {"x": .4, "y": .35}
+            size_hint: (.3, .08)
+            text: ""
+            theme_text_color: "Primary"
+<Check@MDCheckbox>:
+    group: 'Checks'
+    size_hint: None, None
+    size: dp(48), dp(48)
+<Check2@MDCheckbox>:
+    group: 'Checks2'
+    size_hint: None, None
+    size: dp(48), dp(48)
+<About_Page>:
+    FloatLayout
+        Image:
+            source:"Image_Data/About_Image.png"
+<Progress_Page>:
+    on_enter: app.grab_video()
+    FloatLayout:
+        MDLabel:
+            id: converting
+            pos_hint: {"center_x": .5 ,"center_y": .6}
+            size_hint: (.3, .08)
+            text: "Converting & Downloading..."
+            theme_text_color: "Primary"
+        MDProgressBar:
+            pos_hint: {"center_x": .5 ,"center_y": .5}
+            orientation:"horizontal"
+            value: app.percentage
+            color: app.theme_cls.accent_color
+<Audio_Page>:
+    FloatLayout:
+        Image:
+            id: image
+            size_hint: (.5, .28)
+            pos_hint: {"center_x": .5, "center_y": .7}
+        MDLabel:
+            id: label
+            halign:"center"
+        MDFillRoundFlatIconButton:
+            pos_hint: {"center_x": .3, "center_y": .25}
+            size_hint: (.3, .08)
+            icon: "content-save"
+            text: "Save Audio Clip"
+            on_press: app.file_manager_open()
+        MDFillRoundFlatIconButton:
+            pos_hint: {"center_x": .7, "center_y": .25}
+            size_hint: (.3, .08)
+            icon: "replay"
+            text: "Convert Again"
+            on_press: app.convert_again()
+<Video_Page>:
+    FloatLayout:
+        Image:
+            id: image
+            size_hint: (.5, .28)
+            pos_hint: {"center_x": .5, "center_y": .7}
+        MDLabel:
+            id: label
+            halign:"center"
+        MDFillRoundFlatIconButton:
+            pos_hint: {"center_x": .3, "center_y": .25}
+            size_hint: (.3, .08)
+            icon: "content-save"
+            text: "Save Video Clip"
+            on_press: app.file_manager_open()
+        MDFillRoundFlatIconButton:
+            pos_hint: {"center_x": .7, "center_y": .25}
+            size_hint: (.3, .08)
+            icon: "replay"
+            text: "Convert Again"
+            on_press: app.convert_again()
